@@ -39,9 +39,9 @@ public class Roll
         return rollsArray;
     }
 
-    public readonly record struct SingleRoll(int Sum, string List)
+    public readonly record struct SingleRoll(int Sum, string Formula, string List)
     {
-        public bool HasRolls() => string.IsNullOrEmpty(List);
+        public bool IsEmpty() => string.IsNullOrEmpty(List);
     }
 
     public StringBuilder CalculateString()
@@ -101,7 +101,7 @@ public class Roll
             sb.Append($"` {final} `");
 
             // rolls result
-            if (roll.HasRolls())
+            if (!roll.IsEmpty())
             {
                 sb.AppendLine();
                 sb.Append(roll.Sum).AppendSpace().OpenMask().Append(roll.List).CloseMask();
@@ -118,7 +118,8 @@ public class Roll
             if (shiftFrom.HasValue)
             {
                 var shift = final - shiftFrom.Value;
-                sb.Append($" | Shift ({shiftFrom.Value}): {shift.ToString(INT_PLUS)}");
+                sb.AppendLine();
+                sb.Append($"Shift ({shiftFrom.Value}): {shift.ToString(INT_PLUS)}");
             }
 
             // next

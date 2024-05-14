@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using System.Text;
 
 namespace DiscordDiceRoller;
 
@@ -43,7 +44,6 @@ public class DiscordEntryPoint
 
     private async Task MessageReceived(SocketMessage message)
     {
-
         if (message.Source != MessageSource.User)
             return;
 
@@ -68,7 +68,7 @@ public class DiscordEntryPoint
 
     private static CommandResponse Command(ReadOnlySpan<char> command)
     {
-        const char commandKey = 'r';
+        const char commandKey = '!';
 
         if (command.Length == 0 || command[0] != commandKey)
             return CommandResponse.Invalid;

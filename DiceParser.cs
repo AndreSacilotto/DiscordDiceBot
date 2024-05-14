@@ -23,6 +23,13 @@ public static partial class DiceParser
     ? = max explosion (default 1, max is 99)
     t/T = number of rolls (default 1)
     & = against or shift from (default 0)
+
+### TODO
+    l = drop lowest X
+    h = drop highest X
+    k = keep highest X
+    r = keep(retain) lowest X
+
 ```";
 
     public static string SingleDiceParse(int sides) => $"` {new Dice(sides).Roll()} `";
@@ -36,17 +43,15 @@ public static partial class DiceParser
 
         foreach (var c in commands)
         {
-            //var first = c[0];
-            //var after = c.Substring(1);
             var current = cmd.Slice(c.Index, c.Length);
             var first = current[0];
             var after = cmd.Slice(c.Index + 1, c.Length - 1);
 
-            if (first == 'd' || char.IsDigit(first))
+            if (first == 'd' || char.IsAsciiDigit(first))
             {
                 // XdY, dY
-                bool isNegative;
-                if (isNegative = first == '-') // -XdY, -dY
+                bool isNegative = first == '-';
+                if (isNegative) // -XdY, -dY
                     first = current[0];
 
                 uint amount = 1;
@@ -54,9 +59,9 @@ public static partial class DiceParser
 
                 if (first == 'd')
                 {
-                    sides = int.Parse(current);
+                    sides = int.Parse(after);
                 }
-                else if (char.IsDigit(first))
+                else if (char.IsAsciiDigit(first))
                 {
                     var split = after.ToString().Split('d');
                     amount = uint.Parse(split[0]);

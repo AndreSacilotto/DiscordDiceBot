@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace DiscordDiceRoller;
+﻿namespace DiscordDiceRoller;
 
 public class RollModifier
 {

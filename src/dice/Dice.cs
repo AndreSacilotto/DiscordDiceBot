@@ -14,7 +14,7 @@ public readonly struct Dice
         if (negative)
         {
             this.min = -max;
-            this.max = -min; 
+            this.max = -min;
         }
         else
         {

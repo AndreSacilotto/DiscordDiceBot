@@ -1,7 +1,5 @@
 ﻿using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
-using System.Text;
 
 namespace DiscordDiceRoller;
 
@@ -76,11 +74,11 @@ public class DiscordEntryPoint
         if (letter != 'd' && letter != '-' && !char.IsAsciiDigit(letter))
             return CommandResponse.Invalid;
 
-        Console.WriteLine($"[Command]: {command}");
+        //Console.WriteLine($"[Command]: {command}");
 
         if (command.Length == 2 && letter == 'd')
         {
-            Console.WriteLine("1");
+            //Console.WriteLine("1");
             switch (command[1]) // help
             {
                 case 'h':
@@ -91,11 +89,11 @@ public class DiscordEntryPoint
         }
         else
         {
-            Console.WriteLine("2");
+            //Console.WriteLine("2");
             if (DiceParser.DiceCommandRegex().IsMatch(command))
             {
-                Console.WriteLine("3");
-                var response = DiceParser.RollParse(command);
+                //Console.WriteLine("3");
+                var response = DiceParser.RollParse(command, DiceParser.TextBuilds.Rollem);
                 return new(true, response, true);
             }
         }

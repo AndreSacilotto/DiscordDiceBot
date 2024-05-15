@@ -33,16 +33,16 @@ public readonly struct Dice
 
 public readonly struct DiceGroup
 {
-    public readonly uint amount;
+    public readonly int amount;
     public readonly Dice dice;
-    public DiceGroup(Dice dice, uint amount = 1)
+    public DiceGroup(Dice dice, int amount = 1)
     {
         this.amount = amount;
         this.dice = dice;
     }
 
-    public int MaxRoll() => (int)amount * dice.max;
-    public int MinRoll() => (int)amount * dice.min;
+    public int MaxRoll() => amount * dice.max;
+    public int MinRoll() => amount * dice.min;
 
     public IEnumerable<int> Rolls()
     {

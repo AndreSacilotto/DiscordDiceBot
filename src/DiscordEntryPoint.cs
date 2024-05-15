@@ -11,7 +11,8 @@ public class DiscordEntryPoint
 
     public DiscordEntryPoint()
     {
-        client = new DiscordSocketClient(new(){ 
+        client = new DiscordSocketClient(new()
+        {
             MessageCacheSize = 0,
             GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent,
             LogLevel = LogSeverity.Warning,
@@ -33,9 +34,9 @@ public class DiscordEntryPoint
         client.MessageReceived += MessageReceived;
         //client.MessageUpdated += MessageUpdated;
 
-        await Task.Delay(-1); // Infite Delay
+        await Task.Delay(-1); // Infinite Delay
     }
-    
+
     //private async Task MessageUpdated(Cacheable<IMessage, ulong> before, SocketMessage after, ISocketMessageChannel channel)
     //{
     //    var message = await before.GetOrDownloadAsync();
@@ -57,8 +58,8 @@ public class DiscordEntryPoint
             if (response.DeleteSource)
                 await message.Channel.DeleteMessageAsync(message.Id);
         }
-        else
-            await message.Channel.SendMessageAsync("invalid command", messageReference: new(message.Id));
+        //else
+        //    await message.Channel.SendMessageAsync("invalid command", messageReference: new(message.Id));
     }
 
     private readonly record struct CommandResponse(bool ValidCommand, string Message, bool Reply = true, bool DeleteSource = false)
@@ -68,14 +69,16 @@ public class DiscordEntryPoint
 
     private static CommandResponse Command(ReadOnlySpan<char> command)
     {
-        const char commandKey = '!';
-
-        if (command.Length == 0 || command[0] != commandKey)
+        if (command.Length <= 1)
             return CommandResponse.Invalid;
 
-        Console.WriteLine($"[Received]: {command}");
+        var letter = command[0];
+        if (letter != 'd' && letter != '-' && !char.IsAsciiDigit(letter))
+            return CommandResponse.Invalid;
 
-        if (command.Length == 2)
+        Console.WriteLine($"[Command]: {command}");
+
+        if (command.Length == 2 && letter == 'd')
         {
             Console.WriteLine("1");
             switch (command[1]) // help
@@ -86,11 +89,15 @@ public class DiscordEntryPoint
                 return new(true, DiceParser.SingleDiceParse(Dice.rng.Next()), true);
             }
         }
-        else if (command.Length > 2)
+        else
         {
             Console.WriteLine("2");
-            var response = DiceParser.RollParse(command.Slice(1));
-            return new(true, response, true);
+            if (DiceParser.DiceCommandRegex().IsMatch(command))
+            {
+                Console.WriteLine("3");
+                var response = DiceParser.RollParse(command);
+                return new(true, response, true);
+            }
         }
 
         return CommandResponse.Invalid;

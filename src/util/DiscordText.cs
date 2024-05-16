@@ -6,12 +6,9 @@ internal static class DiscordText
 {
     #region Consts
 
-    public const char TAB = '\t';
-    public const char SPACE = ' ';
-
     public const char EMOJI = ':';
 
-    public const char HEADING = '`';
+    public const char HEADING = '#';
     public const char CODE = '`';
     public const char BLOCKQUOTES = '>';
     public const string CODE_BLOCK = "```";
@@ -27,45 +24,7 @@ internal static class DiscordText
 
     #endregion
 
-    public static string Submit(this StringBuilder builder)
-    {
-        var str = builder.ToString();
-        builder.Clear();
-        return str;
-    }
-    public static ReadOnlySpan<char> SubmitSpan(this StringBuilder builder)
-    {
-        var span = builder.ToString().AsSpan();
-        builder.Clear();
-        return span;
-    }
-    public static ReadOnlySpan<char> ToStringSpan(this StringBuilder builder) => builder.ToString().AsSpan();
-
-    #region Wrap
-    public static StringBuilder AppendWrap(this StringBuilder builder, ReadOnlySpan<char> text, bool needReverse, params char[] items)
-    {
-        return AppendWrap(builder, text, needReverse, items.AsSpan());
-    }
-    public static StringBuilder AppendWrap(this StringBuilder builder, ReadOnlySpan<char> text, bool needReverse, params string[] items)
-    {
-        var charItems = string.Concat(items).ToCharArray();
-        return AppendWrap(builder, text, needReverse, charItems);
-    }
-    public static StringBuilder AppendWrap(this StringBuilder builder, ReadOnlySpan<char> text, bool needReverse, Span<char> items)
-    {
-        builder.Append(items);
-        builder.Append(text);
-        if (needReverse)
-            items.Reverse();
-        builder.Append(items);
-        return builder;
-    }
-    #endregion
-
     #region Extra
-    public static StringBuilder AppendSpace(this StringBuilder builder) => builder.Append(SPACE);
-
-    public static StringBuilder AppendTab(this StringBuilder builder) => builder.Append(TAB);
 
     public static StringBuilder AppendItalic(this StringBuilder builder) => builder.Append(ITALIC);
 
@@ -108,13 +67,13 @@ internal static class DiscordText
     {
         var n = Math.Clamp(number, 1, 6);
         builder.Append(HEADING, n);
-        AppendSpace(builder);
+        builder.AppendSpace();
         return builder;
     }
     public static StringBuilder AddBlockquote(this StringBuilder builder)
     {
         builder.Append(BLOCKQUOTES);
-        AppendSpace(builder);
+        builder.AppendSpace();
         return builder;
     }
 
@@ -122,35 +81,65 @@ internal static class DiscordText
     {
         builder.Append(number);
         builder.Append(ORDERED_LIST);
-        AppendSpace(builder);
+        builder.AppendSpace();
         return builder;
     }
 
     public static StringBuilder AddUnorderedList(this StringBuilder builder)
     {
         builder.Append(UNORDERED_LIST);
-        AppendSpace(builder);
+        builder.AppendSpace();
         return builder;
     }
+
+    #endregion
+
+    #region CodeBlock
 
     // https://github.com/highlightjs/highlight.js/blob/main/SUPPORTED_LANGUAGES.md
-    public static StringBuilder CodeBlock(this StringBuilder builder, ReadOnlySpan<char> code, string highlight = "")
-    {
-        builder.Append(CODE_BLOCK).AppendLine(highlight);
-        builder.Append(code);
-        builder.Append(CODE_BLOCK).AppendLine();
-        return builder;
-    }
-    #endregion
+    public static StringBuilder OpenCodeBlock(this StringBuilder builder, string highlight = "") =>
+        builder.Append(CODE_BLOCK).Append(highlight).AppendLine();
 
-    #region Ansi
+    public static StringBuilder CloseCodeBlock(this StringBuilder builder) =>
+        builder.AppendLine().Append(CODE_BLOCK).AppendLine();
+
     // https://gist.github.com/kkrypt0nn/a02506f3712ff2d1c8ca7c9e0aed7c06
-    public static StringBuilder AnsiCodeBlockColor(this StringBuilder builder, ReadOnlySpan<char> code) => CodeBlock(builder, code, "ansi");
+    public enum AnsiFormat
+    {
+        Normal = 0,
+        Bold = 1,
+        Underline = 4,
+    }
 
-    public static StringBuilder OpenAnsi(this StringBuilder builder) => builder.Append("\u001b[0m");
+    public enum AnsiColor
+    {
+        Default = 0,
 
-    public static StringBuilder CloseAnsi(this StringBuilder builder, string color, string format) => builder.Append($"\u001b[{format};{color}m");
+        // Text
+        Gray = 30,
+        Red = 31,
+        Green = 32,
+        Yellow = 33,
+        Blue = 34,
+        Pink = 35,
+        Cyan = 36,
+        White = 37,
+
+        // Background
+        BgFireflyDarkBlue = 40,
+        BgOrange = 41,
+        BgMarbleBlue = 42,
+        BgGreyishTurquoise = 43,
+        BgGray = 44,
+        BgIndigo = 45,
+        BgLightGray = 46,
+        BgWhite = 47,
+    }
+
+    public static StringBuilder OpenCodeBlockAnsi(this StringBuilder builder) => OpenCodeBlock(builder, "ansi");
+    public static StringBuilder OpenAnsi(this StringBuilder builder, AnsiFormat format = AnsiFormat.Normal, AnsiColor color = AnsiColor.Default) => builder.Append($"\u001b[{(int)format};{(int)color}m");
+    // you need to only close once
+    public static StringBuilder CloseAnsi(this StringBuilder builder) => builder.Append("\u001b[0m");
+
     #endregion
-
-
 }

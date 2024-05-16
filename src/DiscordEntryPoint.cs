@@ -93,7 +93,7 @@ public class DiscordEntryPoint
             if (DiceParser.DiceCommandRegex().IsMatch(command))
             {
                 //Console.WriteLine("3");
-                var response = DiceParser.RollParse(command, DiceParser.TextBuilds.Rollem);
+                var response = DiceParser.RollParse(command, DiceParser.TextBuilds.Table);
                 return new(true, response, true);
             }
         }

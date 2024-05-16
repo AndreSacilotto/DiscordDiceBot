@@ -13,13 +13,6 @@ public class RollModifier
         sum += value;
         modifiers.Add(value);
     }
-
-    public IEnumerable<string> AsString()
-    {
-        foreach (var item in modifiers)
-            yield return item.ToString(INT_PLUS);
-    }
-
 }
 
 public class RollDice
@@ -60,7 +53,7 @@ public class RollDice
     public enum RollMask
     {
         None = 0,
-        Maximun = 1 << 0,
+        Maximum = 1 << 0,
         Minimal = 1 << 1,
         Explosion = 1 << 2, // dice from explosion
         Exploded = 1 << 3, // dice that exploded
@@ -78,7 +71,7 @@ public class RollDice
         {
             var flags = RollMask.None;
             var roll = dice.Roll();
-            if (roll == dice.max) flags |= RollMask.Maximun;
+            if (roll == dice.max) flags |= RollMask.Maximum;
             if (roll == dice.min) flags |= RollMask.Minimal;
 
             if (canExplode && roll >= explodeOn)
@@ -91,7 +84,7 @@ public class RollDice
                     {
                         flags = RollMask.Explosion;
                         roll = dice.Roll();
-                        if (roll == dice.max) flags |= RollMask.Maximun;
+                        if (roll == dice.max) flags |= RollMask.Maximum;
                         if (roll == dice.min) flags |= RollMask.Minimal;
                         list.Add(new(roll, flags));
                     }
